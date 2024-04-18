@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, FlatList } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
+import TrackPlayer, { Capability, usePlaybackState, useProgress, State } from 'react-native-track-player';
 import { useRoute } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { songs } from '../MusicData';
-import TrackPlayer, { Capability, usePlaybackState, useProgress, State } from 'react-native-track-player';
 
 
 
@@ -35,6 +35,7 @@ const Music = () => {
   const setupPlayer = async () => {
     try {
       await TrackPlayer.setupPlayer();
+      await TrackPlayer.add(songs);
       await TrackPlayer.updateOptions({
         // Media controls capabilities
         capabilities: [
@@ -46,11 +47,12 @@ const Music = () => {
         ],
 
         // Capabilities that will show up when the notification is in the compact form on Android
-        compactCapabilities: [Capability.Play, Capability.Pause],
+        compactCapabilities: [
+          Capability.Play,
+          Capability.Pause
+        ],
 
       });
-      await TrackPlayer.add(songs);
-
     } catch (error) {
 
     }
@@ -76,12 +78,6 @@ const Music = () => {
           showsHorizontalScrollIndicator={false}
           pagingEnabled
           data={songs}
-          // onScroll={async e => {
-          //   const x = e.nativeEvent.contentOffset.x / width;
-          //   setCurrentSong(parseInt(x.toFixed(0)));
-          //   await TrackPlayer.skip(parseInt(x.toFixed(0)));
-          //   togglePlayBack();
-          // }}
           renderItem={({ item, index }) => {
             return (
               <View style={styles.bannerView}>
@@ -90,11 +86,6 @@ const Music = () => {
               </View>
             );
           }}
-          getItemLayout={(data, index) => ({
-            length: width, // Width of each item
-            offset: width * index, // Start position of the item
-            index, // Index of the item
-          })}
         />
 
       </View>
@@ -117,9 +108,7 @@ const Music = () => {
           <Image source={require('../images/app-1646213_1280.png')} style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={async () => {
-          // await TrackPlayer.skip(1)
           await togglePlayBack();
-          // await togglePlayBack(playbackState);
         }}>
           <Image source={require('../images/play.png')} style={styles.icon} />
         </TouchableOpacity>
